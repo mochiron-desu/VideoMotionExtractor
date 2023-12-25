@@ -16,6 +16,14 @@ This Python project is inspired by the video tutorial by Posy, available at [thi
 - Numpy (`numpy`)
 - tqdm (`tqdm`)
 
+## Example Comparison
+
+Here is a side-by-side comparison of a frame from the input video and the corresponding frame from the output video:
+
+| Input Frame                                     | Output Frame                                     |
+| ----------------------------------------------- | ------------------------------------------------- |
+| ![Input Frame](https://github.com/mochiron-desu/VideoMotionExtractor/blob/main/examples/input1.png?raw=true) | ![Output Frame](https://github.com/mochiron-desu/VideoMotionExtractor/blob/main/examples/output1.png?raw=true) |
+
 ## How to Use
 
 1. **Installation**: Ensure you have the required dependencies installed. You can install them using:

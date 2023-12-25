@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Python project provides a simple yet effective way to extract motion from a video. It uses the OpenCV library for video processing and Numpy for array operations. The script takes an input video, processes each frame, and generates an output video highlighting the motion between consecutive frames.
+This Python project is inspired by the video tutorial by Posy, available at [this link](https://www.youtube.com/watch?v=NSS6yAMZF78&pp=ygUKdGltZWxhcHNlIA%3D%3D), which demonstrates video feature extraction techniques. The project utilizes OpenCV for video processing and Numpy for array operations. It enables users to extract motion from a video, following concepts presented in Posy's tutorial. The script calculates frame differences and generates an output video, highlighting areas with motion.
 
 ## Features
 
@@ -18,7 +18,7 @@ This Python project provides a simple yet effective way to extract motion from a
 
 ## How to Use
 
-1. **Installation**: Make sure you have the required dependencies installed. You can install them using:
+1. **Installation**: Ensure you have the required dependencies installed. You can install them using:
 
     ```bash
     pip install opencv-python numpy tqdm
@@ -54,4 +54,4 @@ This Python project provides a simple yet effective way to extract motion from a
 - The output video will be saved in MP4 format. You can change the codec in the `fourcc` variable if needed.
 - Experiment with different delay values to achieve the desired level of motion extraction.
 
-Feel free to modify the script to suit your specific requirements or integrate it into your projects. For more advanced features, consider exploring additional image processing techniques or using external libraries.
+Feel free to modify the script to suit your specific requirements or integrate it into your projects. Posy's video tutorial serves as inspiration for this project, offering insights into video feature extraction techniques. For more advanced features, consider exploring additional image processing techniques or using external libraries.

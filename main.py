@@ -57,8 +57,8 @@ def extract_motion(input_video_path, output_video_path, delay):
     out.release()
 
 if __name__ == "__main__":
-    input_video_path = ""  # Change this to your input video path
-    output_video_path = ""  # Change this to your desired output video path
+    input_video_path = "path/to/your/input/video.mp4"  # Change this to your input video path
+    output_video_path = "path/to/your/output/video.mp4"  # Change this to your desired output video path
     delay_seconds = 1  # Change this to your desired delay in seconds
 
     extract_motion(input_video_path, output_video_path, delay_seconds)

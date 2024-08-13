@@ -1,64 +1,66 @@
 import cv2
 import numpy as np
 from tqdm import tqdm
+from collections import deque
 
 def extract_motion(input_video_path, output_video_path, delay):
-    # Read the input video
     cap = cv2.VideoCapture(input_video_path)
 
-    # Get video properties
+    if not cap.isOpened():
+        raise ValueError("Error opening video file")
+
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # Create a VideoWriter object for the output video
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can change the codec based on your preference
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
 
-    # Loop through the frames of the input video
-    for _ in tqdm(range(total_frames), desc="Processing frames", unit="frame"):
+    delay_frames = max(1, int(delay * fps))  # Ensure at least 1 frame delay
+    frames_to_process = max(0, total_frames - delay_frames)
+
+    delayed_frames = deque(maxlen=delay_frames)
+
+    # Pre-fill the deque with initial frames
+    for _ in range(delay_frames):
         ret, frame = cap.read()
         if not ret:
-            break
+            raise ValueError("Video is too short for the specified delay")
+        delayed_frames.append(frame)
 
-        # Duplicate the frame
-        duplicate_frame = frame.copy()
+    with tqdm(total=frames_to_process, desc="Processing frames", unit="frame") as pbar:
+        for _ in range(frames_to_process):
+            ret, current_frame = cap.read()
+            if not ret:
+                break
 
-        # Invert the colors of the duplicate frame
-        inverted_frame = cv2.bitwise_not(duplicate_frame)
+            delayed_frame = delayed_frames.popleft()
+            delayed_frames.append(current_frame)
 
-        # Calculate the delay in frames
-        delay_frames = int(delay * fps)
+            # Ensure frames have the same dimensions
+            current_frame = cv2.resize(current_frame, (width, height))
+            delayed_frame = cv2.resize(delayed_frame, (width, height))
 
-        # Read the frame from the delayed position in the original video
-        cap.set(cv2.CAP_PROP_POS_FRAMES, cap.get(cv2.CAP_PROP_POS_FRAMES) + delay_frames)
-        ret, delayed_frame = cap.read()
+            # Calculate the absolute difference
+            result_frame = cv2.absdiff(current_frame, delayed_frame)
 
-        # Reset the video position for the next iteration
-        cap.set(cv2.CAP_PROP_POS_FRAMES, cap.get(cv2.CAP_PROP_POS_FRAMES) - delay_frames)
+            # Write the result frame to the output video
+            out.write(result_frame)
 
-        # Check if the delayed frame is not empty
-        if not ret or delayed_frame is None:
-            break
+            pbar.update(1)
 
-        # Resize frames to ensure they have the same dimensions
-        duplicate_frame = cv2.resize(duplicate_frame, (width, height))
-        delayed_frame = cv2.resize(delayed_frame, (width, height))
-
-        # Enhance the result (you can perform additional processing here)
-        result_frame = cv2.absdiff(duplicate_frame, delayed_frame)
-
-        # Write the result frame to the output video
-        out.write(result_frame)
-
-    # Release video capture and writer objects
     cap.release()
     out.release()
+
+    print(f"Processed {frames_to_process} frames. Output saved to {output_video_path}")
 
 if __name__ == "__main__":
     input_video_path = "path/to/your/input/video.mp4"  # Change this to your input video path
     output_video_path = "path/to/your/output/video.mp4"  # Change this to your desired output video path
     delay_seconds = 1  # Change this to your desired delay in seconds
 
-    extract_motion(input_video_path, output_video_path, delay_seconds)
+    try:
+        extract_motion(input_video_path, output_video_path, delay_seconds)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
